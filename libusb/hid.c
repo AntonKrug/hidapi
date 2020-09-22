@@ -1050,6 +1050,57 @@ int HID_API_EXPORT hid_write(hid_device *dev, const unsigned char *data, size_t 
 	}
 }
 
+
+int HID_API_EXPORT hid_write_no_report(hid_device *dev, const unsigned char *data, size_t length)
+{
+	int res;
+	int report_number = data[0];
+	int skipped_report_id = 0;
+
+	if (report_number == 0x0) {
+		data++;
+		length--;
+		skipped_report_id = 1;
+	}
+
+
+	if (dev->output_endpoint <= 0) {
+		/* No interrupt out endpoint. Use the Control Endpoint */
+		res = libusb_control_transfer(dev->device_handle,
+			LIBUSB_REQUEST_TYPE_CLASS|LIBUSB_RECIPIENT_INTERFACE|LIBUSB_ENDPOINT_OUT,
+			0x09/*HID Set_Report*/,
+			(2/*HID output*/ << 8) | report_number,
+			dev->interface,
+			(unsigned char *)data, length,
+			1000/*timeout millis*/);
+
+		if (res < 0)
+			return -1;
+
+		if (skipped_report_id)
+			length++;
+
+		return length;
+	}
+	else {
+		/* Use the interrupt out endpoint */
+		int actual_length;
+		res = libusb_interrupt_transfer(dev->device_handle,
+			dev->output_endpoint,
+			(unsigned char*)data,
+			length,
+			&actual_length, 1000);
+
+		if (res < 0)
+			return -1;
+
+		if (skipped_report_id)
+			actual_length++;
+
+		return actual_length;
+	}
+}
+
 /* Helper function, to simplify hid_read().
    This should be called with dev->mutex locked. */
 static int return_data(hid_device *dev, unsigned char *data, size_t length)

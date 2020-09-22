@@ -202,6 +202,23 @@ extern "C" {
 		*/
 		int  HID_API_EXPORT HID_API_CALL hid_write(hid_device *device, const unsigned char *data, size_t length);
 
+
+		/** @brief Write an Output report to a HID device.
+
+		  As hid_write but no report_id needed on Windows
+
+			@ingroup API
+			@param device A device handle returned from hid_open().
+			@param data The data to send, including the report number as
+				the first byte.
+			@param length The length in bytes of the data to send.
+
+			@returns
+				This function returns the actual number of bytes written and
+				-1 on error.
+		*/
+		int  HID_API_EXPORT HID_API_CALL hid_write_no_report(hid_device *device, const unsigned char *data, size_t length);
+
 		/** @brief Read an Input report from a HID device with timeout.
 
 			Input reports are returned

@@ -675,6 +675,16 @@ int HID_API_EXPORT hid_write(hid_device *dev, const unsigned char *data, size_t 
 }
 
 
+int HID_API_EXPORT hid_write_no_report(hid_device *dev, const unsigned char *data, size_t length)
+{
+	int bytes_written;
+
+	bytes_written = write(dev->device_handle, data, length);
+
+	return bytes_written;
+}
+
+
 int HID_API_EXPORT hid_read_timeout(hid_device *dev, unsigned char *data, size_t length, int milliseconds)
 {
 	int bytes_read;

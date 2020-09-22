@@ -792,6 +792,14 @@ int HID_API_EXPORT hid_write(hid_device *dev, const unsigned char *data, size_t 
 	return set_report(dev, kIOHIDReportTypeOutput, data, length);
 }
 
+int HID_API_EXPORT hid_write_no_report(hid_device *dev, const unsigned char *data, size_t length)
+{
+	// Mac implementation still assumes report, adding it here as we are only interested
+	// in windows implementation, but still compilation/tests should pass
+	// as the API got changed
+	return set_report(dev, kIOHIDReportTypeOutput, data, length);
+}
+
 /* Helper function, so that this isn't duplicated in hid_read(). */
 static int return_data(hid_device *dev, unsigned char *data, size_t length)
 {
