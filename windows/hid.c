@@ -700,7 +700,7 @@ int HID_API_EXPORT HID_API_CALL hid_write_no_report(hid_device *dev, const unsig
 		length = dev->output_report_length;
 	}
 
-	res = WriteFile(dev->device_handle, buf, length, NULL, &ol);
+	res = WriteFile(dev->device_handle, buf, length+1, NULL, &ol);
 	
 	if (!res) {
 		if (GetLastError() != ERROR_IO_PENDING) {
